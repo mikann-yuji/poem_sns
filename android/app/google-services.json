@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1025010657174:android:e9bdbf9a68983563d01fb7",
+        "mobilesdk_app_id": "1:1025010657174:android:f19946d845a35d97d01fb7",
         "android_client_info": {
-          "package_name": "com.yuji.yuji"
+          "package_name": "com.example.poem_sns"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1025010657174-krqf8urd2c4fv78tsjdaieluvtgi255g.apps.googleusercontent.com",
+          "client_id": "1025010657174-5q6v7hfudhgtcji2q3f3v3o9urglqdf5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.yuji.yuji",
+            "package_name": "com.example.poem_sns",
             "certificate_hash": "ca2180a9d187f83a61b3cee95840c8738ccd099e"
           }
         },
