@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1025010657174",
+    "project_id": "novel-post",
+    "storage_bucket": "novel-post.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025010657174:android:e9bdbf9a68983563d01fb7",
+        "android_client_info": {
+          "package_name": "com.yuji.yuji"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1025010657174-krqf8urd2c4fv78tsjdaieluvtgi255g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yuji.yuji",
+            "certificate_hash": "ca2180a9d187f83a61b3cee95840c8738ccd099e"
+          }
+        },
+        {
+          "client_id": "1025010657174-n8fefmeaikua137hvafs9780elqnj9eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjnG_km_m7yISA1LwGmqcfMIOWyFz2HLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1025010657174-n8fefmeaikua137hvafs9780elqnj9eq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
