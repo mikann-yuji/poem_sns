@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
 
-// import './home/home.dart';
-import './auth/login/login.dart';
 import './error/error.dart';
-import './load//load.dart';
+import './load/load.dart';
+import './home/home.dart';
+import './redux/app_state.dart';
+import './redux/reducer/app_state_reducer.dart';
+import './redux/acitons/app_state_actions.dart';
+import './firestore/get_user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(App());
+  final store = new Store<AppState>(
+    appReducer,
+    initialState: new AppState.loading(),
+  );
+
+  runApp(App(
+    store: store,
+  ));
 }
 
 class App extends StatefulWidget {
+  final Store<AppState> store;
+
+  App({Key? key, required this.store}) : super(key: key);
   // Create the initialization Future outside of `build`:
   @override
   _AppState createState() => _AppState();
@@ -23,23 +39,36 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      // Initialize FlutterFire:
-      future: _initialization,
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          return Error();
-        }
+    return StoreProvider<AppState>(
+      store: widget.store,
+      child: FutureBuilder(
+        // Initialize FlutterFire:
+        future: _initialization,
+        builder: (context, snapshot) {
+          FirebaseAuth.instance.authStateChanges().listen((User? user) {
+            if (user == null) {
+              print('User signed out');
+              widget.store.dispatch(AppStateActions.Logout);
+            } else {
+              print('User signed in');
+              print(user.uid);
+              widget.store.dispatch(AppStateActions.Login);
+            }
+          });
+          // Check for errors
+          if (snapshot.hasError) {
+            return Error();
+          }
 
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MyApp();
-        }
+          // Once complete, show your application
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MyApp();
+          }
 
-        // Otherwise, show something whilst waiting for initialization to complete
-        return Loading();
-      },
+          // Otherwise, show something whilst waiting for initialization to complete
+          return Loading();
+        },
+      ),
     );
   }
 }
@@ -52,18 +81,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(title: 'ログインする'),
+      home: MyHomePage(title: 'Flutter Demo Test Home Page'),
     );
   }
 }

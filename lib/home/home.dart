@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-// import '../login/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
+import '../auth/login/login.dart';
+import '../redux/acitons/app_state_actions.dart';
+import '../redux/app_state.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -21,50 +27,57 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          InkWell(
+            onTap: () {
+              _scaffoldKey.currentState!.openEndDrawer();
+            },
+            child: Center(
+              child: StoreConnector<AppState, ViewModel>(
+                converter: (store) => ViewModel.fromStore(store),
+                builder: (context, viewModel) {
+                  if (viewModel.isLogin) {
+                    return Text('アカウント');
+                  } else {
+                    return Text('ログイン');
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text('お気に入り'),
+            ),
+            ListTile(
+              title: Text('ランキング'),
+            ),
+          ],
+        ),
+      ),
+      endDrawer: Drawer(
+        child: LoginPage(title: 'ログインする'),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -74,14 +87,30 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
-            ElevatedButton(
-              child: Text('最初の画面に戻る'),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-                onPrimary: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
+            StoreConnector<AppState, ViewModel>(
+              converter: (store) => ViewModel.fromStore(store),
+              builder: (context, viewModel) {
+                return Text(
+                  'redux で増える: ${viewModel.counter.toString()} ${viewModel.isLogin.toString()}',
+                );
+              },
+            ),
+            // AddUser('サンプル　太郎', 'サンプル株式会社', 55),
+            StoreConnector<AppState, VoidCallback>(
+              converter: (store) {
+                return () => store.dispatch(AppStateActions.Increment);
+              },
+              builder: (context, callback) {
+                return ElevatedButton(
+                  child: Text(
+                    'reduxで数字をふやす',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.orange,
+                    onPrimary: Colors.white,
+                  ),
+                  onPressed: callback,
+                );
               },
             ),
           ],
@@ -91,7 +120,57 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+    );
+  }
+}
+
+class AddUser extends StatelessWidget {
+  final String fullName;
+  final String company;
+  final int age;
+
+  AddUser(this.fullName, this.company, this.age);
+
+  @override
+  Widget build(BuildContext context) {
+    // Create a CollectionReference called users that references the firestore collection
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    Future<void> addUser() {
+      // Call the user's CollectionReference to add a new user
+      return users
+          .add({
+            'full_name': fullName, // John Doe
+            'company': company, // Stokes and Sons
+            'age': age // 42
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    }
+
+    return TextButton(
+      onPressed: addUser,
+      child: Text(
+        "Add User",
+      ),
+    );
+  }
+}
+
+class ViewModel {
+  final int counter;
+  final bool isLogin;
+
+  ViewModel({
+    required this.counter,
+    required this.isLogin,
+  });
+
+  static ViewModel fromStore(Store<AppState> store) {
+    return new ViewModel(
+      counter: store.state.counter,
+      isLogin: store.state.isLogin,
     );
   }
 }

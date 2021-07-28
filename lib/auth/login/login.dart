@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../home/home.dart';
+import '../register/register.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, required this.title}) : super(key: key);
@@ -24,33 +27,94 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // int _counter = 0;
   bool _isNotCorrectPassword = false;
-  String _correctPassword = 'test';
-  String _text = '';
+  String _emailText = '';
+  String _passwordText = '';
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  void _handleText(String e) {
-    setState(() {
-      _text = e;
-    });
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  void _checkPassword() {
-    if (_correctPassword == _text) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyHomePage(title: 'Flutter Demo Test Home Page'),
-        ),
-      );
+  void _transition() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => RegisterPage()));
+  }
+
+  void _signIn() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _emailText, password: _passwordText);
+
+      print(userCredential.user!.uid);
 
       setState(() {
         _isNotCorrectPassword = false;
       });
-    } else {
-      setState(() {
-        _isNotCorrectPassword = true;
-      });
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              MyHomePage(title: 'Flutter Demo Test Home Page'),
+        ),
+      );
+
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+
+      // final user = users.doc(userCredential.uid).get();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        setState(() {
+          _isNotCorrectPassword = true;
+        });
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        setState(() {
+          _isNotCorrectPassword = true;
+        });
+      }
     }
+  }
+
+  void _googleTransition() {
+    signInWithGoogle().then((UserCredential user) => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  MyHomePage(title: 'Flutter Demo Test Home Page'),
+            ),
+          )
+        });
+  }
+
+  void _handleEmailText(String e) {
+    setState(() {
+      _emailText = e;
+    });
+  }
+
+  void _handlePasswordText(String e) {
+    setState(() {
+      _passwordText = e;
+    });
   }
 
   @override
@@ -70,10 +134,21 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Container(
               margin: EdgeInsets.all(20.0),
-              child: TextField(
-                enabled: true,
-                onChanged: _handleText,
-              )
+              child: TextFormField(
+                  enabled: true,
+                  onChanged: _handleEmailText,
+                  decoration: InputDecoration(
+                    hintText: 'メールアドレス',
+                  )),
+            ),
+            Container(
+              margin: EdgeInsets.all(20.0),
+              child: TextFormField(
+                  enabled: true,
+                  onChanged: _handlePasswordText,
+                  decoration: InputDecoration(
+                    hintText: 'パスワード',
+                  )),
             ),
             Visibility(
               visible: _isNotCorrectPassword,
@@ -90,7 +165,15 @@ class _LoginPageState extends State<LoginPage> {
                 primary: Colors.orange,
                 onPrimary: Colors.white,
               ),
-              onPressed: _checkPassword,
+              onPressed: _signIn,
+            ),
+            ElevatedButton(
+              child: Text('Googleでログインする'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.orange,
+                onPrimary: Colors.white,
+              ),
+              onPressed: _googleTransition,
             ),
             ElevatedButton(
               child: Text('新規登録する'),
@@ -98,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                 primary: Colors.orange,
                 onPrimary: Colors.white,
               ),
-              onPressed: _checkPassword,
+              onPressed: _transition,
             ),
           ],
         ),
