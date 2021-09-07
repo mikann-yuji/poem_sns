@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
 
 import '../auth/login/login.dart';
-import '../redux/acitons/app_state_actions.dart';
-import '../redux/app_state.dart';
+import '../user/menu.dart';
+import '../../user/circle_avatar_image.dart';
+import '../../redux/acitons/app_state_actions.dart';
+import '../../redux/app_state.dart';
+import './post_form_modal.dart';
+import '../../redux/view_model.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -28,12 +22,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 converter: (store) => ViewModel.fromStore(store),
                 builder: (context, viewModel) {
                   if (viewModel.isLogin) {
-                    return Text('アカウント');
+                    return CircleAvatarImage(
+                        radius: 80, imageURL: viewModel.currentUser.imageURL);
                   } else {
                     return Text('ログイン');
                   }
@@ -74,8 +63,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       endDrawer: Drawer(
-        child: LoginPage(title: 'ログインする'),
-      ),
+          child: StoreConnector<AppState, ViewModel>(
+        converter: (store) => ViewModel.fromStore(store),
+        builder: (context, viewModel) {
+          if (viewModel.isLogin) {
+            return UserMenu();
+          } else {
+            return LoginPage(title: 'ログインする');
+          }
+        },
+      )),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -91,14 +88,13 @@ class _MyHomePageState extends State<MyHomePage> {
               converter: (store) => ViewModel.fromStore(store),
               builder: (context, viewModel) {
                 return Text(
-                  'redux で増える: ${viewModel.counter.toString()} ${viewModel.isLogin.toString()}',
+                  'redux で増える: ${viewModel.counter.toString()} ${viewModel.isLogin.toString()} ${viewModel.currentUser.username}',
                 );
               },
             ),
-            // AddUser('サンプル　太郎', 'サンプル株式会社', 55),
             StoreConnector<AppState, VoidCallback>(
               converter: (store) {
-                return () => store.dispatch(AppStateActions.Increment);
+                return () => store.dispatch(new IncrementAction());
               },
               builder: (context, callback) {
                 return ElevatedButton(
@@ -117,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () => postFormModal(context),
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
@@ -154,23 +150,6 @@ class AddUser extends StatelessWidget {
       child: Text(
         "Add User",
       ),
-    );
-  }
-}
-
-class ViewModel {
-  final int counter;
-  final bool isLogin;
-
-  ViewModel({
-    required this.counter,
-    required this.isLogin,
-  });
-
-  static ViewModel fromStore(Store<AppState> store) {
-    return new ViewModel(
-      counter: store.state.counter,
-      isLogin: store.state.isLogin,
     );
   }
 }

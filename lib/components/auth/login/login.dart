@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../home/home.dart';
 import '../register/register.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -30,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   String _emailText = '';
   String _passwordText = '';
   FirebaseAuth auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
@@ -56,11 +47,9 @@ class _LoginPageState extends State<LoginPage> {
 
   void _signIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: _emailText, password: _passwordText);
-
-      print(userCredential.user!.uid);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailText, password: _passwordText
+      );
 
       setState(() {
         _isNotCorrectPassword = false;
@@ -74,10 +63,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('users');
-
-      // final user = users.doc(userCredential.uid).get();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -119,23 +104,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+        body: Form(
+      key: _formKey,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
               margin: EdgeInsets.all(20.0),
               child: TextFormField(
-                  enabled: true,
                   onChanged: _handleEmailText,
                   decoration: InputDecoration(
                     hintText: 'メールアドレス',
@@ -144,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               margin: EdgeInsets.all(20.0),
               child: TextFormField(
-                  enabled: true,
+                  obscureText: true,
                   onChanged: _handlePasswordText,
                   decoration: InputDecoration(
                     hintText: 'パスワード',
@@ -186,6 +164,6 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

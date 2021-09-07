@@ -4,13 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-import './error/error.dart';
-import './load/load.dart';
-import './home/home.dart';
+import './components/error/error.dart';
+import './components/load/load.dart';
+import './components/home/home.dart';
 import './redux/app_state.dart';
 import './redux/reducer/app_state_reducer.dart';
 import './redux/acitons/app_state_actions.dart';
-import './firestore/get_user.dart';
+import './firebase/firestore/get_user.dart';
+import './firebase/firestorage/get_avatar_image.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,11 +49,19 @@ class _AppState extends State<App> {
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
             if (user == null) {
               print('User signed out');
-              widget.store.dispatch(AppStateActions.Logout);
+              widget.store.dispatch(new LogoutAction());
             } else {
-              print('User signed in');
-              print(user.uid);
-              widget.store.dispatch(AppStateActions.Login);
+              getUser(user.uid).then((currentUserData) {
+                getAvatarImage(user.uid).then((imageURL) {
+                  widget.store.dispatch(new AddCurrentUserAction(
+                    username: currentUserData.get('username'),
+                    email: currentUserData.get('email'),
+                    uid: currentUserData.get('uid'),
+                    imageURL: imageURL,
+                  ));
+                });
+              });
+              widget.store.dispatch(new LoginAction());
             }
           });
           // Check for errors
@@ -81,7 +90,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
       ),
       home: MyHomePage(title: 'Flutter Demo Test Home Page'),
     );

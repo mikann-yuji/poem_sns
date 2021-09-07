@@ -3,16 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as imgLib;
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
+// import 'package:flutter_redux/flutter_redux.dart';
+// import 'package:redux/redux.dart';
 
 import 'dart:io';
 import 'dart:typed_data';
 
 import '../../home/home.dart';
-import '../../firestore/add_user.dart';
-import '../../user/avatar_image.dart';
-import '../../redux/acitons/app_state_actions.dart';
+import '../../../firebase/firestore/add_user.dart';
+import '../../../user/avatar_image.dart';
+// import '../../redux/acitons/app_state_actions.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -113,18 +113,13 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
           TextFormField(
-              decoration: InputDecoration(
-                labelText: 'パスワード',
-              ),
-              obscureText: true,
-              onSaved: (value) {
-                _password = value ?? '';
-              }),
-          // StoreConnector(
-          //   converter: (store) {
-          //     return () => store.dispatch(App)
-          //   },
-          // )
+            decoration: InputDecoration(
+              labelText: 'パスワード',
+            ),
+            obscureText: true,
+            onSaved: (value) {
+              _password = value ?? '';
+            }),
           ElevatedButton(
             child: Text('登録する'),
             style: ElevatedButton.styleFrom(

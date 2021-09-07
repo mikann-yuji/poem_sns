@@ -1,18 +1,29 @@
-enum AppStateActions {
-  Increment,
-  Login,
-  Logout,
-  RemoveCurrentUser,
-}
+class IncrementAction {}
 
-class AddCurrentUser {
+class LoginAction {}
+
+class LogoutAction {}
+
+class RemoveCurrentUserAction {}
+
+class AddCurrentUserAction {
   final String username;
   final String uid;
   final String email;
+  final String imageURL;
 
-  const AddCurrentUser({
+  AddCurrentUserAction({
     this.username = '',
     this.uid = '',
     this.email = '',
+    this.imageURL = '',
+  });
+}
+
+class ChangePostContentAction {
+  final String content;
+
+  ChangePostContentAction({
+    this.content = '',
   });
 }
