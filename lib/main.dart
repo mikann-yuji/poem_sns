@@ -6,7 +6,7 @@ import 'package:redux/redux.dart';
 
 import './components/error/error.dart';
 import './components/load/load.dart';
-import './components/home/home.dart';
+import 'components/home/home_page.dart';
 import './redux/app_state.dart';
 import './redux/reducer/app_state_reducer.dart';
 import './redux/acitons/app_state_actions.dart';

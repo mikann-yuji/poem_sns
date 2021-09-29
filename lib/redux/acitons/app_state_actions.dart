@@ -5,6 +5,7 @@ class LoginAction {}
 class LogoutAction {}
 
 class RemoveCurrentUserAction {}
+
 class AddCurrentUserAction {
   final String username;
   final String uid;
@@ -34,5 +35,13 @@ class ChangeFlashMessageState {
   ChangeFlashMessageState({
     this.flag = false,
     this.content = '',
+  });
+}
+
+class ChangeSwipePageIndexAction {
+  final int index;
+
+  ChangeSwipePageIndexAction({
+    this.index = 1,
   });
 }

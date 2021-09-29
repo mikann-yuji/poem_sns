@@ -9,7 +9,7 @@ import 'package:image/image.dart' as imgLib;
 import 'dart:io';
 import 'dart:typed_data';
 
-import '../../home/home.dart';
+import '../../home/home_page.dart';
 import '../../../firebase/firestore/add_user.dart';
 import '../../../user/avatar_image.dart';
 // import '../../redux/acitons/app_state_actions.dart';
