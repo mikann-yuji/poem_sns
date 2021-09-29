@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../functions/make_dialog.dart';
+import '../disgusting_posts.dart/index.dart';
 
 class UserMenu extends StatefulWidget {
   const UserMenu({Key? key}) : super(key: key);
@@ -32,19 +33,20 @@ class _UserMenuState extends State<UserMenu> {
           title: Text('投稿一覧'),
         ),
         ListTile(
-          title: Text(
-            'ログアウト',
-            style: TextStyle(color: Colors.red),
-          ),
-          onTap: () => makeDialog(
-            context,
-            '確認',
-            '本当にログアウトしますか？',
-            'キャンセル',
-            'ログアウト',
-            confirmSignOut
-          )
-        ),
+            title: Text('今までの嫌なこと'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DisgustingPostsIndex()),
+              );
+            }),
+        ListTile(
+            title: Text(
+              'ログアウト',
+              style: TextStyle(color: Colors.red),
+            ),
+            onTap: () => makeDialog(context, '確認', '本当にログアウトしますか？', 'キャンセル',
+                'ログアウト', confirmSignOut)),
       ],
     ));
   }

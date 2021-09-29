@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+CollectionReference posts = FirebaseFirestore.instance.collection('disgusting_posts');
 
-Future<void> addPost({String? content, String? uid}) {
+Future<void> addDisgustingPost({String? content, String? uid}) {
   return posts
       .add({
         'content': content,

@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
-      home: MyHomePage(title: 'Flutter Demo Test Home Page'),
+      home: HomePage(title: 'ポジ変'),
     );
   }
 }

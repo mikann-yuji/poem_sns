@@ -50,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              MyHomePage(title: 'Flutter Demo Test Home Page'),
+              HomePage(title: 'Flutter Demo Test Home Page'),
         ),
       );
     } on FirebaseAuthException catch (e) {

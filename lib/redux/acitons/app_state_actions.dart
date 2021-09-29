@@ -5,7 +5,6 @@ class LoginAction {}
 class LogoutAction {}
 
 class RemoveCurrentUserAction {}
-
 class AddCurrentUserAction {
   final String username;
   final String uid;
@@ -24,6 +23,16 @@ class ChangePostContentAction {
   final String content;
 
   ChangePostContentAction({
+    this.content = '',
+  });
+}
+
+class ChangeFlashMessageState {
+  final bool flag;
+  final String content;
+
+  ChangeFlashMessageState({
+    this.flag = false,
     this.content = '',
   });
 }

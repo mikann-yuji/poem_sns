@@ -3,12 +3,14 @@ import 'package:redux/redux.dart';
 import './app_state.dart';
 import './state/current_user.dart';
 import './state/post_content.dart';
+import './state/flash_message_state.dart';
 
 class ViewModel {
   final int counter;
   final bool isLogin;
   final CurrentUser currentUser;
   final PostContent postContent;
+  final FlashMessageState flashMessageState;
   final Store<AppState> store;
 
   ViewModel({
@@ -16,6 +18,7 @@ class ViewModel {
     required this.isLogin,
     required this.currentUser,
     required this.postContent,
+    required this.flashMessageState,
     required this.store,
   });
 
@@ -25,12 +28,12 @@ class ViewModel {
       isLogin: store.state.isLogin,
       currentUser: store.state.currentUser,
       postContent: store.state.postContent,
+      flashMessageState: store.state.flashMessageState,
       store: store,
     );
   }
 
   void dispatch(dynamic action) {
     store.dispatch(action);
-    print('動いてる');
   }
 }

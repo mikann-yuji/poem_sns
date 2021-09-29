@@ -4,17 +4,21 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../../redux/acitons/app_state_actions.dart';
 import '../../redux/app_state.dart';
 import '../../redux/view_model.dart';
-import '../../firebase/firestore/add_post.dart';
+import '../../firebase/firestore/add_disgusting_post.dart';
 
-void postFormModal(BuildContext context) {
+void postFormModal(BuildContext contextP) {
   showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) => PostModal(),
+    context: contextP,
+    builder: (BuildContext context) => PostModal(
+      contextP: contextP,
+    ),
   );
 }
 
 class PostModal extends StatelessWidget {
-  const PostModal({Key? key}) : super(key: key);
+  const PostModal({Key? key, required this.contextP}) : super(key: key);
+
+  final BuildContext contextP;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,9 @@ class PostModal extends StatelessWidget {
         builder: (context) => StoreConnector<AppState, ViewModel>(
             converter: (store) => ViewModel.fromStore(store),
             builder: (context, viewModel) {
-              return ModalPage(reduxContent: viewModel.postContent.content);
+              return ModalPage(
+                  reduxContent: viewModel.postContent.content,
+                  contextP: contextP);
             }),
       ),
     );
@@ -31,9 +37,12 @@ class PostModal extends StatelessWidget {
 }
 
 class ModalPage extends StatefulWidget {
-  const ModalPage({Key? key, required this.reduxContent}) : super(key: key);
+  const ModalPage(
+      {Key? key, required this.reduxContent, required this.contextP})
+      : super(key: key);
 
   final String reduxContent;
+  final BuildContext contextP;
 
   @override
   _ModalPageState createState() => _ModalPageState();
@@ -61,28 +70,28 @@ class _ModalPageState extends State<ModalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          // Need to use root Navigator, not nested Navigator
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          icon: Icon(Icons.close),
-        ),
-        title: Text('Modal'),
-        actions: [
-          InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ModalDetailPage()),
-            ),
-            child: Container(
-              margin: EdgeInsets.only(right: 18.0),
-              child: Center(child: Text('確認')),
-            ),
+        appBar: AppBar(
+          leading: IconButton(
+            // Need to use root Navigator, not nested Navigator
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            icon: Icon(Icons.close),
           ),
-        ],
-      ),
-      body: Container(
-          padding: EdgeInsets.all(20.0),
+          title: Text('今日はどうしたの？'),
+          actions: [
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ModalDetailPage(contextP: widget.contextP,)),
+              ),
+              child: Container(
+                margin: EdgeInsets.only(right: 18.0),
+                child: Center(child: Text('確認')),
+              ),
+            ),
+          ],
+        ),
+        body: Container(
+          padding: EdgeInsets.only(left: 20.0, right: 20.0),
           child: StoreConnector<AppState, ViewModel>(
             converter: (store) => ViewModel.fromStore(store),
             builder: (context, viewModel) {
@@ -100,14 +109,18 @@ class _ModalPageState extends State<ModalPage> {
                 },
               );
             },
-          )),
-    );
+          ),
+        ));
   }
 }
 
 class ModalDetailPage extends StatelessWidget {
+  const ModalDetailPage({Key? key, required this.contextP}) : super(key: key);
+
+  final BuildContext contextP;
+
   Future<void> sendPost(String? content, String? uid) {
-    return addPost(content: content, uid: uid);
+    return addDisgustingPost(content: content, uid: uid);
   }
 
   @override
@@ -125,10 +138,14 @@ class ModalDetailPage extends StatelessWidget {
                         viewModel.currentUser.uid);
                     viewModel
                         .dispatch(new ChangePostContentAction(content: ''));
+
                     Navigator.of(context, rootNavigator: true).pop();
                     await new Future.delayed(new Duration(milliseconds: 300));
-                    final snackBar = SnackBar(content: Text('送信しました'));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                    viewModel.dispatch(new ChangeFlashMessageState(flag: true, content: '送信しました'));
+
+                    // final snackBar = SnackBar(content: Text('送信しました'));
+                    // ScaffoldMessenger.of(contextP).showSnackBar(snackBar);
                   },
                   icon: Icon(Icons.send),
                 );

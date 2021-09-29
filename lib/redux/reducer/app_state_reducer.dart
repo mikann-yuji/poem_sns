@@ -3,6 +3,7 @@ import './counter_reducer.dart';
 import './is_login_reducer.dart';
 import './current_user_reducer.dart';
 import './post_content_reducer.dart';
+import 'flash_message_state_reducer.dart';
 
 AppState appReducer(AppState state, dynamic action) {
   return new AppState(
@@ -10,5 +11,6 @@ AppState appReducer(AppState state, dynamic action) {
     isLogin: isLoginReducer(state, action),
     currentUser: currentUserReducer(state, action),
     postContent: postContentReducer(state, action),
+    flashMessageState: flashMessageStateReducer(state, action),
   );
 }

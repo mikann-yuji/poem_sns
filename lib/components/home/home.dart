@@ -9,19 +9,27 @@ import '../../redux/acitons/app_state_actions.dart';
 import '../../redux/app_state.dart';
 import './post_form_modal.dart';
 import '../../redux/view_model.dart';
+import '../../ranking_icons.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   int _counter = 0;
+  int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: Text('お気に入り'),
-            ),
-            ListTile(
-              title: Text('ランキング'),
-            ),
-          ],
-        ),
       ),
       endDrawer: Drawer(
           child: StoreConnector<AppState, ViewModel>(
@@ -92,11 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
-            StoreConnector<AppState, VoidCallback>(
-              converter: (store) {
-                return () => store.dispatch(new IncrementAction());
-              },
-              builder: (context, callback) {
+            StoreConnector<AppState, ViewModel>(
+              converter: (store) => ViewModel.fromStore(store),
+              builder: (context, viewModel) {
                 return ElevatedButton(
                   child: Text(
                     'reduxで数字をふやす',
@@ -105,12 +99,49 @@ class _MyHomePageState extends State<MyHomePage> {
                     primary: Colors.orange,
                     onPrimary: Colors.white,
                   ),
-                  onPressed: callback,
+                  onPressed: () => viewModel.dispatch(new IncrementAction()),
                 );
               },
             ),
+            StoreConnector<AppState, ViewModel>(
+                converter: (store) => ViewModel.fromStore(store),
+                onDidChange: (prev, next) {
+                  if (next.flashMessageState.flag) {
+                    print('動いた');
+                    final snackBar =
+                        SnackBar(content: Text(next.flashMessageState.content));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
+                builder: (context, viewModel) {
+                  if (viewModel.flashMessageState.flag) {
+                    viewModel.dispatch(
+                        new ChangeFlashMessageState(flag: false, content: ''));
+                    return Container();
+                  } else {
+                    return Container();
+                  }
+                })
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'ホーム',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Ranking.podium),
+            label: 'ランキング',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.style),
+            label: 'カテゴリ',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => postFormModal(context),
@@ -137,9 +168,9 @@ class AddUser extends StatelessWidget {
       // Call the user's CollectionReference to add a new user
       return users
           .add({
-            'full_name': fullName, // John Doe
-            'company': company, // Stokes and Sons
-            'age': age // 42
+            'full_name': fullName,
+            'company': company,
+            'age': age,
           })
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));

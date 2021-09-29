@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              MyHomePage(title: 'Flutter Demo Test Home Page'),
+              HomePage(title: 'Flutter Demo Test Home Page'),
         ),
       );
 
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  MyHomePage(title: 'Flutter Demo Test Home Page'),
+                  HomePage(title: 'Flutter Demo Test Home Page'),
             ),
           )
         });

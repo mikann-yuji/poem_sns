@@ -1,0 +1,16 @@
+{
+  "name": "Ranking",
+  "css_prefix_text": "",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "1cb1f90374328a2d62f07418e171b015",
+      "css": "podium",
+      "code": 60016,
+      "src": "rpgawesome"
+    }
+  ]
+}
