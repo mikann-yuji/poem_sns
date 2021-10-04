@@ -1,6 +1,7 @@
 import './state/current_user.dart';
 import './state/post_content.dart';
 import './state/flash_message_state.dart';
+import './state/swipe_page_index.dart';
 
 class AppState {
   late bool isLoading;
@@ -9,6 +10,7 @@ class AppState {
   late CurrentUser currentUser;
   late PostContent postContent;
   late FlashMessageState flashMessageState;
+  late SwipePageIndex swipePageIndex;
 
   AppState({
     this.isLoading = false,
@@ -17,6 +19,7 @@ class AppState {
     this.currentUser = const CurrentUser(),
     this.postContent = const PostContent(),
     this.flashMessageState = const FlashMessageState(),
+    this.swipePageIndex = const SwipePageIndex(),
   });
 
   factory AppState.loading() => AppState(
@@ -30,6 +33,7 @@ class AppState {
     CurrentUser? currentUser,
     PostContent? postContent,
     FlashMessageState? flashMessageState,
+    SwipePageIndex? swipePageIndex,
   }) {
     return new AppState(
       isLoading: isLoading ?? this.isLoading,
@@ -38,6 +42,7 @@ class AppState {
       currentUser: currentUser ?? this.currentUser,
       postContent: postContent ?? this.postContent,
       flashMessageState: flashMessageState ?? this.flashMessageState,
+      swipePageIndex: swipePageIndex ?? this.swipePageIndex,
     );
   }
 }

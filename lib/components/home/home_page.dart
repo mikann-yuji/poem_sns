@@ -5,13 +5,12 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../auth/login/login.dart';
 import '../user/menu.dart';
 import '../../user/circle_avatar_image.dart';
-import '../../redux/acitons/app_state_actions.dart';
 import '../../redux/app_state.dart';
 import './post_form_modal.dart';
 import '../../redux/view_model.dart';
 import '../../ranking_icons.dart';
-import './home.dart';
 import 'swipe_page.dart';
+import '../../redux/acitons/app_state_actions.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -23,19 +22,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // int _counter = 0;
-  int _selectedIndex = 1;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final PageController pageController = PageController(
     initialPage: 1,
   );
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    pageController.jumpToPage(index);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,24 +69,31 @@ class _HomePageState extends State<HomePage> {
         originContext: context,
         pageController: pageController,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Ranking.podium),
-            label: 'ランキング',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'ホーム',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.style),
-            label: 'カテゴリ',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: StoreConnector<AppState, ViewModel>(
+          converter: (store) => ViewModel.fromStore(store),
+          builder: (context, viewModel) {
+            return BottomNavigationBar(
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(Ranking.podium),
+                    label: 'ランキング',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'ホーム',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.style),
+                    label: 'カテゴリ',
+                  ),
+                ],
+                currentIndex: viewModel.swipePageIndex.index,
+                onTap: (int index) {
+                  viewModel
+                      .dispatch(new ChangeSwipePageIndexAction(index: index));
+                  pageController.jumpToPage(index);
+                });
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => postFormModal(context),
         tooltip: 'Increment',

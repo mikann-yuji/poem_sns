@@ -2,17 +2,17 @@ import '../acitons/app_state_actions.dart';
 import '../app_state.dart';
 import '../state/swipe_page_index.dart';
 
-SwipePageIndex postContentReducer(AppState state, dynamic action) {
+SwipePageIndex swipePageIndexReducer(AppState state, dynamic action) {
   if (action is ChangeSwipePageIndexAction) {
     final SwipePageIndex newSwipePageIndex = SwipePageIndex().copyWith(
-      content: action.content,
+      index: action.index,
     );
     final AppState newState = state.copyWith(
-      postContent: newSwipePageIndex,
+      swipePageIndex: newSwipePageIndex,
     );
 
-    return newState.postContent;
+    return newState.swipePageIndex;
   } else {
-    return state.postContent;
+    return state.swipePageIndex;
   }
 }

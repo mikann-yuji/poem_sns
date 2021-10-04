@@ -4,6 +4,7 @@ import './app_state.dart';
 import './state/current_user.dart';
 import './state/post_content.dart';
 import './state/flash_message_state.dart';
+import './state/swipe_page_index.dart';
 
 class ViewModel {
   final int counter;
@@ -11,6 +12,7 @@ class ViewModel {
   final CurrentUser currentUser;
   final PostContent postContent;
   final FlashMessageState flashMessageState;
+  final SwipePageIndex swipePageIndex;
   final Store<AppState> store;
 
   ViewModel({
@@ -19,6 +21,7 @@ class ViewModel {
     required this.currentUser,
     required this.postContent,
     required this.flashMessageState,
+    required this.swipePageIndex,
     required this.store,
   });
 
@@ -29,6 +32,7 @@ class ViewModel {
       currentUser: store.state.currentUser,
       postContent: store.state.postContent,
       flashMessageState: store.state.flashMessageState,
+      swipePageIndex: store.state.swipePageIndex,
       store: store,
     );
   }

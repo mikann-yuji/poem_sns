@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import './home.dart';
 import './ranking.dart';
 import './category.dart';
+import '../../redux/acitons/app_state_actions.dart';
+import '../../redux/app_state.dart';
+import '../../redux/view_model.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage(
-      {Key? key,
-      required this.originContext,
-      required this.pageController})
+      {Key? key, required this.originContext, required this.pageController})
       : super(key: key);
 
   final BuildContext originContext;
@@ -19,32 +21,29 @@ class SwipePage extends StatefulWidget {
 }
 
 class _SwipePageState extends State<SwipePage> {
-  // final PageController controller = PageController(
-  //   initialPage: 1,
-  // );
-
-  // void test() {
-  //   controller.jumpToPage(2);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      /// [PageView.scrollDirection] defaults to [Axis.horizontal].
-      /// Use [Axis.vertical] to scroll vertically.
-      scrollDirection: Axis.horizontal,
-      controller: widget.pageController,
-      children: [
-        Ranking(
-          originContext: widget.originContext,
-        ),
-        Home(
-          originContext: widget.originContext,
-        ),
-        Category(
-          originContext: widget.originContext,
-        ),
-      ],
-    );
+    return StoreConnector<AppState, ViewModel>(
+        converter: (store) => ViewModel.fromStore(store),
+        builder: (context, viewModel) {
+          return PageView(
+            scrollDirection: Axis.horizontal,
+            controller: widget.pageController,
+            onPageChanged: (int index) {
+              viewModel.dispatch(new ChangeSwipePageIndexAction(index: index));
+            },
+            children: [
+              Ranking(
+                originContext: widget.originContext,
+              ),
+              Home(
+                originContext: widget.originContext,
+              ),
+              Category(
+                originContext: widget.originContext,
+              ),
+            ],
+          );
+        });
   }
 }
