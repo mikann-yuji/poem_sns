@@ -3,14 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../auth/login/login.dart';
-import '../user/menu.dart';
 import '../../user/circle_avatar_image.dart';
-import '../../redux/app_state.dart';
-import './post_form_modal.dart';
-import '../../redux/view_model.dart';
 import '../../ranking_icons.dart';
 import 'swipe_page.dart';
+import '../../redux/app_state.dart';
+import '../../redux/view_model.dart';
 import '../../redux/acitons/app_state_actions.dart';
+import '../user/my_page/my_page.dart';
+import '../shared/disgus_post_button.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -34,35 +34,36 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          InkWell(
-            onTap: () {
-              _scaffoldKey.currentState!.openEndDrawer();
-            },
-            child: Center(
-              child: StoreConnector<AppState, ViewModel>(
-                converter: (store) => ViewModel.fromStore(store),
-                builder: (context, viewModel) {
-                  if (viewModel.isLogin) {
-                    return CircleAvatarImage(
-                        radius: 80, imageURL: viewModel.currentUser.imageURL);
-                  } else {
-                    return Text('ログイン');
-                  }
-                },
-              ),
-            ),
-          ),
+          StoreConnector<AppState, ViewModel>(
+              converter: (store) => ViewModel.fromStore(store),
+              builder: (context, viewModel) {
+                if (viewModel.isLogin) {
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyPage()),
+                      );
+                    },
+                    child: CircleAvatarImage(
+                        radius: 80, imageURL: viewModel.currentUser.imageURL),
+                  );
+                } else {
+                  return InkWell(
+                    onTap: () => _scaffoldKey.currentState!.openEndDrawer(),
+                    child: Center(
+                      child: Text('ログイン'),
+                    ),
+                  );
+                }
+              })
         ],
       ),
       endDrawer: Drawer(
           child: StoreConnector<AppState, ViewModel>(
         converter: (store) => ViewModel.fromStore(store),
         builder: (context, viewModel) {
-          if (viewModel.isLogin) {
-            return UserMenu();
-          } else {
-            return LoginPage(title: 'ログインする');
-          }
+          return LoginPage(title: 'ログインする');
         },
       )),
       body: SwipePage(
@@ -94,11 +95,7 @@ class _HomePageState extends State<HomePage> {
                   pageController.jumpToPage(index);
                 });
           }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => postFormModal(context),
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: DisgusPostButton(contextP: context,),
     );
   }
 }

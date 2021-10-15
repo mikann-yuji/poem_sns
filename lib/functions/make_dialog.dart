@@ -14,7 +14,7 @@ void makeDialog(BuildContext context, String title, String content, String cance
             ),
             TextButton(
               child: Text(okWord),
-              onPressed: callback,
+              onPressed: () => callback(),
             ),
           ]);
     });

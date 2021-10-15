@@ -47,10 +47,12 @@ class _AppState extends State<App> {
         future: _initialization,
         builder: (context, snapshot) {
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
+
             if (user == null) {
               print('User signed out');
               widget.store.dispatch(new LogoutAction());
             } else {
+              print('User signed in');
               getUser(user.uid).then((currentUserData) {
                 getAvatarImage(user.uid).then((imageURL) {
                   widget.store.dispatch(new AddCurrentUserAction(
