@@ -1,18 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../locale/intl_time.dart';
-
 CollectionReference posts =
     FirebaseFirestore.instance.collection('disgusting_posts');
 
 Future<void> addDisgustingPost({String? content, String? uid}) {
-  String now = IntlTime().getNow();
+  DateTime createdAt = DateTime.now();
+  Timestamp createdAtTimestamp = Timestamp.fromDate(createdAt);
 
   return posts
       .add({
         'content': content,
         'uid': uid,
-        'now': now,
+        'createdAt': createdAtTimestamp,
       })
       .then((value) => print("Post Added"))
       .catchError((error) => print("Failed to add post: $error"));

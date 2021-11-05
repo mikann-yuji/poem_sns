@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                   pageController.jumpToPage(index);
                 });
           }),
-      floatingActionButton: DisgusPostButton(contextP: context,),
+      floatingActionButton: DisgusPostButton(contextP: context),
     );
   }
 }
@@ -109,11 +109,9 @@ class AddUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a CollectionReference called users that references the firestore collection
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     Future<void> addUser() {
-      // Call the user's CollectionReference to add a new user
       return users
           .add({
             'full_name': fullName,
