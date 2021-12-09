@@ -33,6 +33,9 @@ dependencies:
   cloud_firestore: ^2.3.0
   google_sign_in: ^5.0.4
 
+  # RichText
+  flutter_quill: ^2.0.15
+
   # Redux
   redux: ^5.0.0
   flutter_redux: ^0.8.2

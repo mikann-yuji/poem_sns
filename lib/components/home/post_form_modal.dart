@@ -81,7 +81,10 @@ class _ModalPageState extends State<ModalPage> {
             InkWell(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ModalDetailPage(contextP: widget.contextP,)),
+                MaterialPageRoute(
+                    builder: (context) => ModalDetailPage(
+                          contextP: widget.contextP,
+                        )),
               ),
               child: Container(
                 margin: EdgeInsets.only(right: 18.0),
@@ -142,10 +145,8 @@ class ModalDetailPage extends StatelessWidget {
                     Navigator.of(context, rootNavigator: true).pop();
                     await new Future.delayed(new Duration(milliseconds: 300));
 
-                    viewModel.dispatch(new ChangeFlashMessageState(flag: true, content: '送信しました'));
-
-                    // final snackBar = SnackBar(content: Text('送信しました'));
-                    // ScaffoldMessenger.of(contextP).showSnackBar(snackBar);
+                    viewModel.dispatch(new ChangeFlashMessageState(
+                        flag: true, content: '送信しました'));
                   },
                   icon: Icon(Icons.send),
                 );

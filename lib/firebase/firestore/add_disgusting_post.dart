@@ -13,6 +13,7 @@ Future<void> addDisgustingPost({String? content, String? uid}) {
         'uid': uid,
         'createdAt': createdAtTimestamp,
       })
-      .then((value) => print("Post Added"))
+      .then((value) => print(value.id))
+      // .then((value) => value.get(GetOptions()).then((value) => print(value.data())))
       .catchError((error) => print("Failed to add post: $error"));
 }
